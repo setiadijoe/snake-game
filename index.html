@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e9ece0">
+  <title>Snake | Pocket Arcade</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topline">
+      <a class="brand" href="#top" aria-label="Pocket Arcade home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>POCKET ARCADE</span>
+      </a>
+      <div class="edition"><span>CLASSIC SERIES</span><span class="edition-number">01</span></div>
+    </header>
+
+    <main id="top">
+      <div class="page-title">
+        <div>
+          <p class="eyebrow">SCORE ATTACK / 01</p>
+          <h1>SNAKE</h1>
+        </div>
+        <span class="title-rule" aria-hidden="true"></span>
+      </div>
+
+      <section class="game-layout" aria-label="Snake arcade game">
+        <div class="console">
+          <div class="console-header console-label">
+            <span>LCD DISPLAY</span>
+            <span>20 x 20</span>
+          </div>
+          <div class="screen">
+            <canvas class="game-canvas" id="game-board" width="400" height="400" role="img" aria-label="Snake game board" aria-describedby="game-status"></canvas>
+            <div class="screen-overlay" id="screen-overlay" aria-hidden="true">
+              <strong id="overlay-title">READY?</strong>
+              <span id="overlay-caption">INSERT COIN</span>
+            </div>
+          </div>
+          <div class="console-footer">
+            <span class="power-indicator"><i class="power-light" aria-hidden="true"></i>POWER</span>
+            <span>POCKET ARCADE</span>
+          </div>
+        </div>
+
+        <aside class="side-panel" aria-label="Score and controls">
+          <div class="score-grid">
+            <div class="stat">
+              <span class="stat-label">Score</span>
+              <output class="stat-value" id="score-value">000</output>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Best</span>
+              <output class="stat-value" id="best-value">000</output>
+            </div>
+          </div>
+
+          <div class="pace-row">
+            <span class="pace-label">Pace</span>
+            <span class="pace-value"><span id="pace-value">01</span><span class="pace-bars" id="pace-bars" aria-hidden="true"></span></span>
+          </div>
+
+          <button class="game-button primary-button" id="play-button" type="button">START</button>
+          <button class="game-button secondary-button" id="new-game-button" type="button">NEW GAME</button>
+
+          <div class="control-block">
+            <p class="control-heading">DIRECTION</p>
+            <div class="d-pad" aria-label="Touch direction controls">
+              <button class="direction-button direction-up" type="button" data-direction="up" aria-label="Move up"></button>
+              <button class="direction-button direction-left" type="button" data-direction="left" aria-label="Move left"></button>
+              <span class="direction-button direction-center" aria-hidden="true"></span>
+              <button class="direction-button direction-right" type="button" data-direction="right" aria-label="Move right"></button>
+              <button class="direction-button direction-down" type="button" data-direction="down" aria-label="Move down"></button>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <p class="sr-only" id="game-status" role="status" aria-live="polite">Ready to play</p>
+    </main>
+
+    <footer class="bottomline">
+      <span>POCKET ARCADE</span>
+      <span>EST. 1988 / GAME 01</span>
+    </footer>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
