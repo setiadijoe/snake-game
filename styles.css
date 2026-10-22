@@ -106,7 +106,7 @@ button:focus-visible {
   display: flex;
   align-items: end;
   gap: 17px;
-  margin: 27px 0 23px;
+  margin: 0 0 23px;
 }
 
 .page-title h1 {
@@ -133,6 +133,17 @@ button:focus-visible {
   grid-template-columns: minmax(0, 1fr) 270px;
   align-items: start;
   gap: clamp(28px, 6vw, 62px);
+  margin-top: 27px;
+}
+
+.game-column {
+  min-width: 0;
+}
+
+.right-panel {
+  display: grid;
+  gap: 30px;
+  align-content: start;
 }
 
 .console {
@@ -366,6 +377,207 @@ button:focus-visible {
   margin: 0;
 }
 
+.leaderboard {
+  border-top: 2px solid var(--ink);
+}
+
+.leaderboard-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 0 9px;
+}
+
+.leaderboard-heading h2,
+.leaderboard-heading span {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.leaderboard-heading span {
+  color: var(--muted);
+}
+
+.leaderboard-list {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.leaderboard-list li {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 12px;
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+
+.leaderboard-rank,
+.leaderboard-score {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.leaderboard-rank,
+.leaderboard-message {
+  color: var(--muted);
+}
+
+.leaderboard-message {
+  display: block !important;
+}
+
+.leaderboard-more {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  background: transparent;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.leaderboard-more:hover:not(:disabled) {
+  background: rgba(32, 37, 29, 0.06);
+}
+
+.leaderboard-more:disabled {
+  cursor: wait;
+}
+
+.score-dialog {
+  width: min(420px, calc(100% - 32px));
+  padding: 0;
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: 7px 7px 0 var(--ink);
+}
+
+.high-scores-dialog {
+  width: min(520px, calc(100% - 32px));
+}
+
+.high-scores-dialog-content {
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+}
+
+.high-scores-dialog-content .eyebrow,
+.high-scores-dialog-content h2 {
+  margin: 0;
+}
+
+.high-scores-dialog-content h2 {
+  font-size: 22px;
+}
+
+.high-scores-dialog .leaderboard-list {
+  max-height: min(55vh, 440px);
+  overflow-y: auto;
+}
+
+.score-dialog::backdrop {
+  background: rgba(32, 37, 29, 0.62);
+}
+
+.score-dialog-form {
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+}
+
+.score-dialog-form .eyebrow {
+  margin: 0;
+}
+
+.score-dialog-form h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.score-dialog-value {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.score-dialog-value output {
+  display: block;
+  margin-top: 5px;
+  color: var(--ink);
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-dialog-form label {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.score-dialog-form input {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 10px;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  color: var(--ink);
+  background: #fffaf1;
+  font: inherit;
+}
+
+.score-dialog-form input:focus-visible {
+  outline: 3px solid var(--tomato);
+  outline-offset: 2px;
+}
+
+.score-dialog-error {
+  margin: 0;
+  color: var(--tomato-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.score-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.score-dialog-actions button {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dialog-cancel {
+  background: transparent;
+}
+
+.dialog-submit {
+  color: #fffaf1;
+  background: var(--tomato);
+}
+
+.score-dialog-actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .d-pad {
   display: grid;
   width: 150px;
@@ -463,6 +675,10 @@ button:focus-visible {
 
   .game-layout {
     grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+  }
+
+  .right-panel {
     gap: 30px;
   }
 

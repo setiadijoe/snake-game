@@ -18,9 +18,17 @@
   const playButton = requireElement("play-button");
   const newGameButton = requireElement("new-game-button");
   const gameStatus = requireElement("game-status");
+  const scoreDialog = requireElement("score-dialog");
+  const scoreForm = requireElement("score-form");
+  const playerNameInput = requireElement("player-name");
+  const gameOverScore = requireElement("game-over-score");
+  const scoreDialogError = requireElement("score-dialog-error");
+  const submitScoreButton = requireElement("submit-score");
+  const cancelScoreButton = requireElement("cancel-score");
 
   const GRID_SIZE = 20;
   const CELL_SIZE = 20;
+  const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || window.location.origin;
   const DIRECTIONS = {
     up: { x: 0, y: -1 },
     right: { x: 1, y: 0 },
@@ -51,6 +59,11 @@
   let state = "ready";
   let timer = null;
   let turnLocked = false;
+  const leaderboard = requireElement("leaderboard-list");
+  const viewTopScoresButton = requireElement("view-top-scores");
+  const highScoresDialog = requireElement("high-scores-dialog");
+  const highScoresList = requireElement("high-scores-list");
+  const closeHighScoresButton = requireElement("close-high-scores");
 
   function clearTimer() {
     if (timer !== null) window.clearInterval(timer);
@@ -111,6 +124,115 @@
       const bar = document.createElement("i");
       if (index < Math.min(pace, 8)) bar.classList.add("active");
       paceBars.append(bar);
+    }
+  }
+
+  function renderScores(list, scores) {
+    list.replaceChildren();
+    if (scores.length === 0) {
+      const emptyMessage = document.createElement("li");
+      emptyMessage.className = "leaderboard-message";
+      emptyMessage.textContent = "No scores yet. Be the first!";
+      list.append(emptyMessage);
+      return;
+    }
+
+    for (const [index, entry] of scores.entries()) {
+      const row = document.createElement("li");
+      const rank = document.createElement("span");
+      const name = document.createElement("span");
+      const value = document.createElement("span");
+      rank.className = "leaderboard-rank";
+      name.className = "leaderboard-name";
+      value.className = "leaderboard-score";
+      rank.textContent = `${String(index + 1).padStart(2, "0")}.`;
+      name.textContent = entry.name;
+      value.textContent = formatScore(entry.score);
+      row.append(rank, name, value);
+      list.append(row);
+    }
+  }
+
+  async function loadScores() {
+    const requestUrl = new URL("/api/scores", API_BASE_URL);
+    const response = await fetch(requestUrl);
+    if (!response.ok) throw new Error(`Unable to load scores (${response.status})`);
+    const page = await response.json();
+    renderScores(leaderboard, page.scores);
+    if (page.scores.length > 0) {
+      const savedBest = page.scores.reduce((highest, entry) => Math.max(highest, entry.score), 0);
+      bestScore = Math.max(bestScore, savedBest);
+      saveBestScore(bestScore);
+      updateScoreboard();
+    }
+  }
+
+  async function loadTopScores() {
+    const requestUrl = new URL("/api/scores", API_BASE_URL);
+    requestUrl.searchParams.set("limit", "10");
+    highScoresList.replaceChildren();
+    const loadingMessage = document.createElement("li");
+    loadingMessage.className = "leaderboard-message";
+    loadingMessage.textContent = "Loading scores...";
+    highScoresList.append(loadingMessage);
+    viewTopScoresButton.disabled = true;
+    try {
+      const response = await fetch(requestUrl);
+      if (!response.ok) throw new Error(`Unable to load scores (${response.status})`);
+      const page = await response.json();
+      renderScores(highScoresList, page.scores);
+    } catch (error) {
+      highScoresList.replaceChildren();
+      const errorMessage = document.createElement("li");
+      errorMessage.className = "leaderboard-message";
+      errorMessage.textContent = `Unable to load scores: ${error.message}`;
+      highScoresList.append(errorMessage);
+    } finally {
+      viewTopScoresButton.disabled = false;
+    }
+  }
+
+  function openScoreDialog() {
+    scoreForm.reset();
+    gameOverScore.value = String(score);
+    gameOverScore.textContent = String(score);
+    scoreDialogError.hidden = true;
+    scoreDialogError.textContent = "";
+    scoreDialog.showModal();
+    playerNameInput.focus();
+  }
+
+  async function saveGameOverScore(event) {
+    event.preventDefault();
+    const name = playerNameInput.value.trim();
+    if (!name || name.length > 30) {
+      playerNameInput.setCustomValidity("Enter a name with 1 to 30 characters.");
+      playerNameInput.reportValidity();
+      return;
+    }
+    playerNameInput.setCustomValidity("");
+    submitScoreButton.disabled = true;
+    cancelScoreButton.disabled = true;
+    scoreDialogError.hidden = true;
+    try {
+      const response = await fetch(new URL("/api/scores", API_BASE_URL), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, score })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || `Unable to save score (${response.status})`);
+      gameStatus.textContent = `Score ${score} saved for ${result.name}.`;
+      scoreDialog.close();
+      loadScores().catch((error) => {
+        gameStatus.textContent = `Score saved, but unable to refresh scores: ${error.message}`;
+      });
+    } catch (error) {
+      scoreDialogError.textContent = `Unable to save score: ${error.message}`;
+      scoreDialogError.hidden = false;
+    } finally {
+      submitScoreButton.disabled = false;
+      cancelScoreButton.disabled = false;
     }
   }
 
@@ -255,6 +377,7 @@
     state = nextState;
     updateControls();
     draw();
+    if (nextState === "over") openScoreDialog();
   }
 
   function advance() {
@@ -316,6 +439,28 @@
   }
 
   playButton.addEventListener("click", startOrToggle);
+  scoreForm.addEventListener("submit", (event) => {
+    void saveGameOverScore(event);
+  });
+  playerNameInput.addEventListener("input", () => playerNameInput.setCustomValidity(""));
+  cancelScoreButton.addEventListener("click", () => {
+    scoreDialog.close();
+    gameStatus.textContent = "Score not saved.";
+  });
+  scoreDialog.addEventListener("cancel", () => {
+    gameStatus.textContent = "Score not saved.";
+  });
+  scoreDialog.addEventListener("close", () => {
+    if (state === "over") playButton.focus();
+  });
+  viewTopScoresButton.addEventListener("click", () => {
+    highScoresDialog.showModal();
+    void loadTopScores();
+  });
+  closeHighScoresButton.addEventListener("click", () => highScoresDialog.close());
+  highScoresDialog.addEventListener("close", () => {
+    viewTopScoresButton.focus();
+  });
   newGameButton.addEventListener("click", () => {
     resetGame();
     startGame();
@@ -326,6 +471,15 @@
   });
 
   document.addEventListener("keydown", (event) => {
+    if (
+      scoreDialog.open ||
+      highScoresDialog.open ||
+      (event.target instanceof HTMLElement &&
+        event.target.closest("input, textarea, select, [contenteditable='true']"))
+    ) {
+      return;
+    }
+
     const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
     const directionName = KEY_DIRECTIONS[key];
     if (directionName) {
@@ -333,7 +487,12 @@
       requestDirection(directionName);
       return;
     }
-    if (key === " " || key === "p") {
+    if (key === "p") {
+      event.preventDefault();
+      if (!event.repeat) startOrToggle();
+      return;
+    }
+    if (key === " ") {
       event.preventDefault();
       if (!event.repeat) togglePause();
     }
@@ -344,4 +503,11 @@
   bestValue.value = formatScore(bestScore);
   bestValue.textContent = formatScore(bestScore);
   resetGame();
+  loadScores().catch((error) => {
+    leaderboard.replaceChildren();
+    const message = document.createElement("li");
+    message.className = "leaderboard-message";
+    message.textContent = `Unable to load scores: ${error.message}`;
+    leaderboard.append(message);
+  });
 })();

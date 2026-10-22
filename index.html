@@ -18,65 +18,108 @@
     </header>
 
     <main id="top">
-      <div class="page-title">
-        <div>
-          <p class="eyebrow">SCORE ATTACK / 01</p>
-          <h1>SNAKE</h1>
-        </div>
-        <span class="title-rule" aria-hidden="true"></span>
-      </div>
-
       <section class="game-layout" aria-label="Snake arcade game">
-        <div class="console">
-          <div class="console-header console-label">
-            <span>LCD DISPLAY</span>
-            <span>20 x 20</span>
-          </div>
-          <div class="screen">
-            <canvas class="game-canvas" id="game-board" width="400" height="400" role="img" aria-label="Snake game board" aria-describedby="game-status"></canvas>
-            <div class="screen-overlay" id="screen-overlay" aria-hidden="true">
-              <strong id="overlay-title">READY?</strong>
-              <span id="overlay-caption">INSERT COIN</span>
+        <div class="game-column">
+          <div class="page-title">
+            <div>
+              <p class="eyebrow">SCORE ATTACK / 01</p>
+              <h1>SNAKE</h1>
             </div>
+            <span class="title-rule" aria-hidden="true"></span>
           </div>
-          <div class="console-footer">
-            <span class="power-indicator"><i class="power-light" aria-hidden="true"></i>POWER</span>
-            <span>POCKET ARCADE</span>
+
+          <div class="console">
+            <div class="console-header console-label">
+              <span>LCD DISPLAY</span>
+              <span>20 x 20</span>
+            </div>
+            <div class="screen">
+              <canvas class="game-canvas" id="game-board" width="400" height="400" role="img" aria-label="Snake game board" aria-describedby="game-status"></canvas>
+              <div class="screen-overlay" id="screen-overlay" aria-hidden="true">
+                <strong id="overlay-title">READY?</strong>
+                <span id="overlay-caption">INSERT COIN</span>
+              </div>
+            </div>
+            <div class="console-footer">
+              <span class="power-indicator"><i class="power-light" aria-hidden="true"></i>POWER</span>
+              <span>POCKET ARCADE</span>
+            </div>
           </div>
         </div>
 
-        <aside class="side-panel" aria-label="Score and controls">
-          <div class="score-grid">
-            <div class="stat">
-              <span class="stat-label">Score</span>
-              <output class="stat-value" id="score-value">000</output>
+        <div class="right-panel">
+          <section class="leaderboard" aria-labelledby="leaderboard-title">
+            <div class="leaderboard-heading">
+              <h2 id="leaderboard-title">HIGH SCORES</h2>
+              <span>TOP 3</span>
             </div>
-            <div class="stat">
-              <span class="stat-label">Best</span>
-              <output class="stat-value" id="best-value">000</output>
+            <ol class="leaderboard-list" id="leaderboard-list" aria-live="polite">
+              <li class="leaderboard-message">Loading scores...</li>
+            </ol>
+            <button class="leaderboard-more" id="view-top-scores" type="button">VIEW TOP 10</button>
+          </section>
+
+          <aside class="side-panel" aria-label="Score and controls">
+            <div class="score-grid">
+              <div class="stat">
+                <span class="stat-label">Score</span>
+                <output class="stat-value" id="score-value">000</output>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Best</span>
+                <output class="stat-value" id="best-value">000</output>
+              </div>
             </div>
-          </div>
 
-          <div class="pace-row">
-            <span class="pace-label">Pace</span>
-            <span class="pace-value"><span id="pace-value">01</span><span class="pace-bars" id="pace-bars" aria-hidden="true"></span></span>
-          </div>
-
-          <button class="game-button primary-button" id="play-button" type="button">START</button>
-          <button class="game-button secondary-button" id="new-game-button" type="button">NEW GAME</button>
-
-          <div class="control-block">
-            <p class="control-heading">DIRECTION</p>
-            <div class="d-pad" aria-label="Touch direction controls">
-              <button class="direction-button direction-up" type="button" data-direction="up" aria-label="Move up"></button>
-              <button class="direction-button direction-left" type="button" data-direction="left" aria-label="Move left"></button>
-              <span class="direction-button direction-center" aria-hidden="true"></span>
-              <button class="direction-button direction-right" type="button" data-direction="right" aria-label="Move right"></button>
-              <button class="direction-button direction-down" type="button" data-direction="down" aria-label="Move down"></button>
+            <div class="pace-row">
+              <span class="pace-label">Pace</span>
+              <span class="pace-value"><span id="pace-value">01</span><span class="pace-bars" id="pace-bars" aria-hidden="true"></span></span>
             </div>
-          </div>
-        </aside>
+
+            <button class="game-button primary-button" id="play-button" type="button">START</button>
+            <button class="game-button secondary-button" id="new-game-button" type="button">NEW GAME</button>
+
+            <div class="control-block">
+              <p class="control-heading">DIRECTION</p>
+              <div class="d-pad" aria-label="Touch direction controls">
+                <button class="direction-button direction-up" type="button" data-direction="up" aria-label="Move up"></button>
+                <button class="direction-button direction-left" type="button" data-direction="left" aria-label="Move left"></button>
+                <span class="direction-button direction-center" aria-hidden="true"></span>
+                <button class="direction-button direction-right" type="button" data-direction="right" aria-label="Move right"></button>
+                <button class="direction-button direction-down" type="button" data-direction="down" aria-label="Move down"></button>
+              </div>
+            </div>
+          </aside>
+        </div>
       </section>
+
+      <dialog class="score-dialog" id="score-dialog" aria-labelledby="score-dialog-title">
+        <form class="score-dialog-form" id="score-form">
+          <p class="eyebrow">GAME OVER</p>
+          <h2 id="score-dialog-title">SAVE YOUR SCORE</h2>
+          <p class="score-dialog-value">YOUR SCORE <output id="game-over-score">000</output></p>
+          <label for="player-name">YOUR NAME</label>
+          <input id="player-name" name="name" type="text" maxlength="30" autocomplete="nickname" required>
+          <p class="score-dialog-error" id="score-dialog-error" role="alert" hidden></p>
+          <div class="score-dialog-actions">
+            <button class="dialog-cancel" id="cancel-score" type="button">CANCEL</button>
+            <button class="dialog-submit" id="submit-score" type="submit">SAVE SCORE</button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog class="score-dialog high-scores-dialog" id="high-scores-dialog" aria-labelledby="high-scores-title">
+        <div class="high-scores-dialog-content">
+          <p class="eyebrow">LEADERBOARD</p>
+          <h2 id="high-scores-title">TOP 10 HIGH SCORES</h2>
+          <ol class="leaderboard-list" id="high-scores-list" aria-live="polite">
+            <li class="leaderboard-message">Loading scores...</li>
+          </ol>
+          <div class="score-dialog-actions">
+            <button class="dialog-cancel" id="close-high-scores" type="button">CLOSE</button>
+          </div>
+        </div>
+      </dialog>
 
       <p class="sr-only" id="game-status" role="status" aria-live="polite">Ready to play</p>
     </main>
@@ -87,6 +130,6 @@
     </footer>
   </div>
 
-  <script src="script.js" defer></script>
+  <script type="module" src="/script.js"></script>
 </body>
 </html>
