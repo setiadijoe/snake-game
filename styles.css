@@ -360,16 +360,6 @@ button:focus-visible {
   background: var(--tomato-dark);
 }
 
-.secondary-button {
-  min-height: 42px;
-  margin-top: 10px;
-  background: transparent;
-}
-
-.secondary-button:hover {
-  background: rgba(32, 37, 29, 0.06);
-}
-
 .control-block {
   margin-top: 24px;
   padding-top: 13px;
@@ -400,6 +390,10 @@ button:focus-visible {
 
 .leaderboard-heading span {
   color: var(--muted);
+}
+
+.mobile-score-count {
+  display: none;
 }
 
 .leaderboard-list {
@@ -678,47 +672,63 @@ button:focus-visible {
 
   .game-layout {
     grid-template-columns: minmax(0, 1fr);
-    gap: 30px;
+    gap: 16px;
   }
 
-  .right-panel {
-    gap: 30px;
+  .game-column,
+  .right-panel,
+  .side-panel {
+    display: contents;
   }
 
   .console {
     width: 100%;
     margin-inline: auto;
+    order: 3;
   }
 
-  .side-panel {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 150px;
-    align-items: start;
-    column-gap: 22px;
+  .page-title {
+    order: 0;
   }
 
-  .score-grid,
+  .leaderboard {
+    order: 1;
+  }
+
+  .score-grid {
+    order: 2;
+  }
+
   .pace-row {
-    grid-column: 1;
-  }
-
-  .primary-button,
-  .secondary-button {
-    grid-column: 1;
+    order: 4;
   }
 
   .primary-button {
-    grid-row: 3;
-  }
-
-  .secondary-button {
-    grid-row: 4;
+    order: 5;
   }
 
   .control-block {
-    grid-column: 2;
-    grid-row: 1 / span 4;
-    margin-top: 0;
+    order: 7;
+  }
+
+  .score-grid,
+  .pace-row,
+  .primary-button,
+  .control-block {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .game-layout .leaderboard-list li:nth-child(n + 2) {
+    display: none;
+  }
+
+  .desktop-score-count {
+    display: none;
+  }
+
+  .mobile-score-count {
+    display: inline;
   }
 
   .bottomline {
@@ -729,11 +739,6 @@ button:focus-visible {
 @media (max-width: 390px) {
   .page-shell {
     width: calc(100% - 22px);
-  }
-
-  .side-panel {
-    grid-template-columns: minmax(0, 1fr) 144px;
-    column-gap: 14px;
   }
 
   .d-pad {

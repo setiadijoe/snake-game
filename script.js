@@ -16,7 +16,6 @@
   const speedValue = requireElement("speed-value");
   const paceBars = requireElement("pace-bars");
   const playButton = requireElement("play-button");
-  const newGameButton = requireElement("new-game-button");
   const gameStatus = requireElement("game-status");
   const scoreDialog = requireElement("score-dialog");
   const scoreForm = requireElement("score-form");
@@ -475,10 +474,6 @@
   closeHighScoresButton.addEventListener("click", () => highScoresDialog.close());
   highScoresDialog.addEventListener("close", () => {
     viewTopScoresButton.focus();
-  });
-  newGameButton.addEventListener("click", () => {
-    resetGame();
-    startGame();
   });
 
   document.querySelectorAll("[data-direction]").forEach((button) => {
