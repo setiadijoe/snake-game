@@ -64,6 +64,10 @@
   const highScoresDialog = requireElement("high-scores-dialog");
   const highScoresList = requireElement("high-scores-list");
   const closeHighScoresButton = requireElement("close-high-scores");
+  let highScoresCursor = "";
+  let highScoresLoaded = 0;
+  let highScoresLoading = false;
+  let highScoresHasMore = true;
 
   function clearTimer() {
     if (timer !== null) window.clearInterval(timer);
@@ -137,6 +141,10 @@
       return;
     }
 
+    appendScores(list, scores, 0);
+  }
+
+  function appendScores(list, scores, startIndex) {
     for (const [index, entry] of scores.entries()) {
       const row = document.createElement("li");
       const rank = document.createElement("span");
@@ -145,7 +153,7 @@
       rank.className = "leaderboard-rank";
       name.className = "leaderboard-name";
       value.className = "leaderboard-score";
-      rank.textContent = `${String(index + 1).padStart(2, "0")}.`;
+      rank.textContent = `${String(startIndex + index + 1).padStart(2, "0")}.`;
       name.textContent = entry.name;
       value.textContent = formatScore(entry.score);
       row.append(rank, name, value);
@@ -167,28 +175,46 @@
     }
   }
 
-  async function loadTopScores() {
-    const requestUrl = new URL("/api/scores", API_BASE_URL);
-    requestUrl.searchParams.set("limit", "10");
+  async function loadHighScores() {
     highScoresList.replaceChildren();
+    highScoresCursor = "";
+    highScoresLoaded = 0;
+    highScoresHasMore = true;
     const loadingMessage = document.createElement("li");
     loadingMessage.className = "leaderboard-message";
     loadingMessage.textContent = "Loading scores...";
     highScoresList.append(loadingMessage);
+    await loadNextHighScores();
+  }
+
+  async function loadNextHighScores() {
+    if (highScoresLoading || !highScoresHasMore) return;
+    highScoresLoading = true;
     viewTopScoresButton.disabled = true;
     try {
+      const requestUrl = new URL("/api/scores", API_BASE_URL);
+      requestUrl.searchParams.set("limit", "10");
+      if (highScoresCursor) requestUrl.searchParams.set("cursor", highScoresCursor);
       const response = await fetch(requestUrl);
       if (!response.ok) throw new Error(`Unable to load scores (${response.status})`);
       const page = await response.json();
-      renderScores(highScoresList, page.scores);
+      if (highScoresLoaded === 0) {
+        renderScores(highScoresList, page.scores);
+      } else {
+        appendScores(highScoresList, page.scores, highScoresLoaded);
+      }
+      highScoresLoaded += page.scores.length;
+      highScoresCursor = page.nextCursor;
+      highScoresHasMore = Boolean(page.nextCursor);
     } catch (error) {
-      highScoresList.replaceChildren();
+      if (highScoresLoaded === 0) highScoresList.replaceChildren();
       const errorMessage = document.createElement("li");
       errorMessage.className = "leaderboard-message";
       errorMessage.textContent = `Unable to load scores: ${error.message}`;
       highScoresList.append(errorMessage);
     } finally {
       viewTopScoresButton.disabled = false;
+      highScoresLoading = false;
     }
   }
 
@@ -455,7 +481,12 @@
   });
   viewTopScoresButton.addEventListener("click", () => {
     highScoresDialog.showModal();
-    void loadTopScores();
+    void loadHighScores();
+  });
+  highScoresList.addEventListener("scroll", () => {
+    if (highScoresList.scrollTop + highScoresList.clientHeight >= highScoresList.scrollHeight - 48) {
+      void loadNextHighScores();
+    }
   });
   closeHighScoresButton.addEventListener("click", () => highScoresDialog.close());
   highScoresDialog.addEventListener("close", () => {
