@@ -12,7 +12,6 @@
   const overlayTitle = requireElement("overlay-title");
   const overlayCaption = requireElement("overlay-caption");
   const scoreValue = requireElement("score-value");
-  const bestValue = requireElement("best-value");
   const paceValue = requireElement("pace-value");
   const paceBars = requireElement("pace-bars");
   const playButton = requireElement("play-button");
@@ -55,7 +54,6 @@
   let direction = DIRECTIONS.right;
   let food = null;
   let score = 0;
-  let bestScore = loadBestScore();
   let state = "ready";
   let timer = null;
   let turnLocked = false;
@@ -72,22 +70,6 @@
   function clearTimer() {
     if (timer !== null) window.clearInterval(timer);
     timer = null;
-  }
-
-  function loadBestScore() {
-    try {
-      return Number.parseInt(localStorage.getItem("pocket-arcade-snake-best") || "0", 10) || 0;
-    } catch {
-      return 0;
-    }
-  }
-
-  function saveBestScore(value) {
-    try {
-      localStorage.setItem("pocket-arcade-snake-best", String(value));
-    } catch {
-      // The game remains playable when storage is unavailable.
-    }
   }
 
   function createSnake() {
@@ -119,8 +101,6 @@
   function updateScoreboard() {
     scoreValue.value = formatScore(score);
     scoreValue.textContent = formatScore(score);
-    bestValue.value = formatScore(bestScore);
-    bestValue.textContent = formatScore(bestScore);
     const pace = 1 + Math.floor(score / 50);
     paceValue.textContent = String(pace).padStart(2, "0");
     paceBars.replaceChildren();
@@ -167,12 +147,6 @@
     if (!response.ok) throw new Error(`Unable to load scores (${response.status})`);
     const page = await response.json();
     renderScores(leaderboard, page.scores);
-    if (page.scores.length > 0) {
-      const savedBest = page.scores.reduce((highest, entry) => Math.max(highest, entry.score), 0);
-      bestScore = Math.max(bestScore, savedBest);
-      saveBestScore(bestScore);
-      updateScoreboard();
-    }
   }
 
   async function loadHighScores() {
@@ -428,10 +402,6 @@
     snake.unshift(head);
     if (eating) {
       score += 10;
-      if (score > bestScore) {
-        bestScore = score;
-        saveBestScore(bestScore);
-      }
       food = spawnFood();
       updateScoreboard();
       if (!food) {
@@ -531,8 +501,6 @@
 
   window.addEventListener("resize", draw);
   if ("ResizeObserver" in window) new ResizeObserver(draw).observe(canvas);
-  bestValue.value = formatScore(bestScore);
-  bestValue.textContent = formatScore(bestScore);
   resetGame();
   loadScores().catch((error) => {
     leaderboard.replaceChildren();
