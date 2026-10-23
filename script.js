@@ -30,8 +30,8 @@
   const CELL_SIZE = 20;
   const MAX_LEVEL = 99;
   const POINTS_PER_LEVEL = 1000;
-  const START_SPEED = 1000 / 160;
-  const SPEED_INCREASE = 5;
+  const START_SPEED = 2;
+  const SPEED_PER_LEVEL = 2;
   const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || window.location.origin;
   const DIRECTIONS = {
     up: { x: 0, y: -1 },
@@ -344,7 +344,7 @@
   }
 
   function speedForLevel(level) {
-    return START_SPEED + ((level - 1) / (MAX_LEVEL - 1)) * SPEED_INCREASE;
+    return START_SPEED + (level - 1) * SPEED_PER_LEVEL;
   }
 
   function tickDuration() {
