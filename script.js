@@ -16,6 +16,7 @@
   const speedValue = requireElement("speed-value");
   const paceBars = requireElement("pace-bars");
   const playButton = requireElement("play-button");
+  const handPreferenceStatus = requireElement("hand-preference-status");
   const gameStatus = requireElement("game-status");
   const scoreDialog = requireElement("score-dialog");
   const scoreForm = requireElement("score-form");
@@ -31,6 +32,7 @@
   const POINTS_PER_LEVEL = 1000;
   const START_SPEED = 2;
   const SPEED_PER_LEVEL = 2;
+  const HAND_PREFERENCE_KEY = "snake-game-hand-preference";
   const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || window.location.origin;
   const DIRECTIONS = {
     up: { x: 0, y: -1 },
@@ -66,10 +68,39 @@
   const highScoresDialog = requireElement("high-scores-dialog");
   const highScoresList = requireElement("high-scores-list");
   const closeHighScoresButton = requireElement("close-high-scores");
+  const handOptions = document.querySelectorAll("[data-hand]");
   let highScoresCursor = "";
   let highScoresLoaded = 0;
   let highScoresLoading = false;
   let highScoresHasMore = true;
+
+  function updateHandPreference(hand) {
+    document.documentElement.dataset.controlHand = hand;
+    handOptions.forEach((option) => {
+      option.setAttribute("aria-pressed", String(option.dataset.hand === hand));
+    });
+  }
+
+  try {
+    const savedHand = window.localStorage.getItem(HAND_PREFERENCE_KEY);
+    if (savedHand === "left" || savedHand === "right") updateHandPreference(savedHand);
+  } catch {
+    handPreferenceStatus.textContent = "Hand preference could not be loaded from this device.";
+  }
+
+  handOptions.forEach((option) => {
+    option.addEventListener("click", () => {
+      const hand = option.dataset.hand;
+      if (hand !== "left" && hand !== "right") return;
+      updateHandPreference(hand);
+      try {
+        window.localStorage.setItem(HAND_PREFERENCE_KEY, hand);
+        handPreferenceStatus.textContent = "";
+      } catch {
+        handPreferenceStatus.textContent = "Hand preference could not be saved on this device.";
+      }
+    });
+  });
 
   function clearTimer() {
     if (timer !== null) window.clearInterval(timer);

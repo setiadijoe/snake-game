@@ -370,6 +370,24 @@ button:focus-visible {
   margin: 0;
 }
 
+.hand-preference {
+  display: none;
+}
+
+.hand-option {
+  min-height: 28px;
+  border: 1px solid #92998a;
+  background: #dfe3d7;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hand-option[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: #fffaf1;
+}
+
 .leaderboard {
   border-top: 2px solid var(--ink);
 }
@@ -671,7 +689,14 @@ button:focus-visible {
   }
 
   .game-layout {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) 144px;
+    grid-template-areas:
+      "title title"
+      "leaderboard leaderboard"
+      "score score"
+      "board board"
+      "pace pace"
+      "start control";
     gap: 16px;
   }
 
@@ -684,39 +709,65 @@ button:focus-visible {
   .console {
     width: 100%;
     margin-inline: auto;
-    order: 3;
+    grid-area: board;
   }
 
   .page-title {
-    order: 0;
+    grid-area: title;
   }
 
   .leaderboard {
-    order: 1;
+    grid-area: leaderboard;
   }
 
   .score-grid {
-    order: 2;
+    grid-area: score;
   }
 
   .pace-row {
-    order: 4;
+    grid-area: pace;
   }
 
   .primary-button {
-    order: 5;
+    grid-area: start;
+    align-self: center;
+    margin-top: 0;
   }
 
   .control-block {
-    order: 7;
+    grid-area: control;
+    margin-top: 0;
   }
 
-  .score-grid,
-  .pace-row,
-  .primary-button,
-  .control-block {
-    grid-column: auto;
-    grid-row: auto;
+  .hand-preference {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    width: 100%;
+    margin: 0 0 12px;
+    padding: 0;
+    border: 0;
+  }
+
+  .hand-preference legend {
+    margin-bottom: 5px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  html[data-control-hand="left"] .game-layout {
+    grid-template-columns: 144px minmax(0, 1fr);
+    grid-template-areas:
+      "title title"
+      "leaderboard leaderboard"
+      "score score"
+      "board board"
+      "pace pace"
+      "control start";
+  }
+
+  html[data-control-hand="left"] .primary-button {
+    justify-self: stretch;
   }
 
   .game-layout .leaderboard-list li:nth-child(n + 2) {

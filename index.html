@@ -81,6 +81,11 @@
             <button class="game-button primary-button" id="play-button" type="button">START</button>
 
             <div class="control-block">
+              <fieldset class="hand-preference">
+                <legend>PLAYING HAND</legend>
+                <button class="hand-option" type="button" data-hand="left" aria-label="Left-handed controls" aria-pressed="false">LEFT</button>
+                <button class="hand-option" type="button" data-hand="right" aria-label="Right-handed controls" aria-pressed="true">RIGHT</button>
+              </fieldset>
               <p class="control-heading">DIRECTION</p>
               <div class="d-pad" aria-label="Touch direction controls">
                 <button class="direction-button direction-up" type="button" data-direction="up" aria-label="Move up"></button>
@@ -123,6 +128,7 @@
       </dialog>
 
       <p class="sr-only" id="game-status" role="status" aria-live="polite">Ready to play</p>
+      <p class="sr-only" id="hand-preference-status" role="status" aria-live="polite"></p>
     </main>
 
     <footer class="bottomline">
