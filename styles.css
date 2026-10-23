@@ -300,14 +300,22 @@ button:focus-visible {
 .pace-value {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   font-size: 12px;
   font-weight: 700;
+}
+
+.speed-display {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 400;
+  white-space: nowrap;
 }
 
 .pace-bars {
   display: flex;
   gap: 3px;
+  margin-left: 2px;
 }
 
 .pace-bars i {

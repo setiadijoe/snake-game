@@ -12,7 +12,8 @@
   const overlayTitle = requireElement("overlay-title");
   const overlayCaption = requireElement("overlay-caption");
   const scoreValue = requireElement("score-value");
-  const paceValue = requireElement("pace-value");
+  const levelValue = requireElement("level-value");
+  const speedValue = requireElement("speed-value");
   const paceBars = requireElement("pace-bars");
   const playButton = requireElement("play-button");
   const newGameButton = requireElement("new-game-button");
@@ -27,6 +28,10 @@
 
   const GRID_SIZE = 20;
   const CELL_SIZE = 20;
+  const MAX_LEVEL = 99;
+  const POINTS_PER_LEVEL = 1000;
+  const START_SPEED = 1000 / 160;
+  const SPEED_INCREASE = 5;
   const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || window.location.origin;
   const DIRECTIONS = {
     up: { x: 0, y: -1 },
@@ -101,12 +106,13 @@
   function updateScoreboard() {
     scoreValue.value = formatScore(score);
     scoreValue.textContent = formatScore(score);
-    const pace = 1 + Math.floor(score / 50);
-    paceValue.textContent = String(pace).padStart(2, "0");
+    const level = currentLevel();
+    levelValue.textContent = String(level).padStart(2, "0");
+    speedValue.textContent = speedForLevel(level).toFixed(1);
     paceBars.replaceChildren();
     for (let index = 0; index < 8; index += 1) {
       const bar = document.createElement("i");
-      if (index < Math.min(pace, 8)) bar.classList.add("active");
+      if (index < Math.ceil(level / MAX_LEVEL * 8)) bar.classList.add("active");
       paceBars.append(bar);
     }
   }
@@ -333,8 +339,16 @@
     gameStatus.textContent = announcements[state];
   }
 
+  function currentLevel() {
+    return Math.min(MAX_LEVEL, Math.floor(score / POINTS_PER_LEVEL) + 1);
+  }
+
+  function speedForLevel(level) {
+    return START_SPEED + ((level - 1) / (MAX_LEVEL - 1)) * SPEED_INCREASE;
+  }
+
   function tickDuration() {
-    return Math.max(72, 160 - Math.floor(score / 50) * 10);
+    return 1000 / speedForLevel(currentLevel());
   }
 
   function startGame() {
