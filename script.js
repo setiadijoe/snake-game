@@ -33,6 +33,7 @@
   const START_SPEED = 2;
   const SPEED_PER_LEVEL = 2;
   const HAND_PREFERENCE_KEY = "snake-game-hand-preference";
+  const SNAKE_GAME_TITLE = "Snake Game";
   const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || window.location.origin;
   const DIRECTIONS = {
     up: { x: 0, y: -1 },
@@ -73,6 +74,26 @@
   let highScoresLoaded = 0;
   let highScoresLoading = false;
   let highScoresHasMore = true;
+  let snakeGameIdPromise;
+
+  async function getSnakeGameId() {
+    if (!snakeGameIdPromise) {
+      snakeGameIdPromise = (async () => {
+        const requestUrl = new URL("/api/title-games", API_BASE_URL);
+        requestUrl.searchParams.set("search", SNAKE_GAME_TITLE);
+        requestUrl.searchParams.set("limit", "100");
+        const response = await fetch(requestUrl);
+        if (!response.ok) throw new Error(`Unable to load title games (${response.status})`);
+        const page = await response.json();
+        const game = page.games.find(
+          (entry) => entry.game_name.toLowerCase() === SNAKE_GAME_TITLE.toLowerCase()
+        );
+        if (!game) throw new Error(`${SNAKE_GAME_TITLE} was not found`);
+        return game.id;
+      })();
+    }
+    return snakeGameIdPromise;
+  }
 
   function updateHandPreference(hand) {
     document.documentElement.dataset.controlHand = hand;
@@ -251,10 +272,11 @@
     cancelScoreButton.disabled = true;
     scoreDialogError.hidden = true;
     try {
+      const gameId = await getSnakeGameId();
       const response = await fetch(new URL("/api/scores", API_BASE_URL), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, score })
+        body: JSON.stringify({ name, score, game_id: gameId })
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || `Unable to save score (${response.status})`);
