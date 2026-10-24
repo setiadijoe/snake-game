@@ -29,7 +29,7 @@
   const GRID_SIZE = 20;
   const CELL_SIZE = 20;
   const MAX_LEVEL = 99;
-  const POINTS_PER_LEVEL = 1000;
+  const POINTS_PER_LEVEL = 300;
   const START_SPEED = 2;
   const SPEED_PER_LEVEL = 2;
   const HAND_PREFERENCE_KEY = "snake-game-hand-preference";

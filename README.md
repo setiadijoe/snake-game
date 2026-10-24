@@ -17,4 +17,9 @@ Open the local URL printed by Vite. Restart the dev server after changing
 `VITE_API_BASE_URL` is compiled into browser code, so it is public configuration.
 Never put Supabase keys or other secrets in a `VITE_*` variable.
 
+## Game progression
+
+The game starts at level 1 and 2 moves per second. Every 300 points advances
+one level and adds 2 moves per second, up to level 99.
+
 Build production assets with `npm run build`.
