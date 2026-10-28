@@ -180,6 +180,7 @@
 
   async function loadScores() {
     const requestUrl = new URL("/api/scores", API_BASE_URL);
+    requestUrl.searchParams.set("title_game_id", SNAKE_GAME_ID);
     const response = await fetch(requestUrl);
     if (!response.ok) throw new Error(`Unable to load scores (${response.status})`);
     const page = await response.json();
@@ -204,6 +205,7 @@
     viewTopScoresButton.disabled = true;
     try {
       const requestUrl = new URL("/api/scores", API_BASE_URL);
+      requestUrl.searchParams.set("title_game_id", SNAKE_GAME_ID);
       requestUrl.searchParams.set("limit", "10");
       if (highScoresCursor) requestUrl.searchParams.set("cursor", highScoresCursor);
       const response = await fetch(requestUrl);
